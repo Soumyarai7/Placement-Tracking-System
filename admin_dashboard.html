@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-header slide-up">
+    <h2>Admin Dashboard</h2>
+    <p>Manage students, companies, and placement tracking</p>
+</div>
+
+<div class="dashboard-grid" style="margin-bottom: 2rem;">
+    <div class="card glass slide-up" style="animation-delay: 0.1s;">
+        <h3>Add New Company</h3>
+        <form method="POST" action="{{ url_for('add_company') }}">
+            <div class="form-group">
+                <label for="name">Company Name</label>
+                <input type="text" id="name" name="name" required placeholder="Enter company name">
+            </div>
+            <div class="form-group">
+                <label for="description">Description (Optional)</label>
+                <input type="text" id="description" name="description" placeholder="Short description">
+            </div>
+            <button type="submit" class="btn btn-primary">Add Company</button>
+        </form>
+    </div>
+    
+    <div class="card glass slide-up table-wrapper" style="animation-delay: 0.2s;">
+        <h3>Registered Companies</h3>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for company in companies %}
+                <tr>
+                    <td>{{ company.id }}</td>
+                    <td>{{ company.name }}</td>
+                    <td>{{ company.description }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" class="text-center">No companies found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card glass slide-up table-wrapper" style="animation-delay: 0.3s;">
+    <h3>Registered Students</h3>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Department</th>
+                <th>CGPA</th>
+                <th>Company</th>
+                <th>File</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td>{{ student.full_name }}</td>
+                <td>{{ student.department }}</td>
+                <td>{{ student.cgpa }}</td>
+                <td>
+                    {% if student.company %}
+                        {{ student.company.name }}
+                    {% else %}
+                        <span class="text-muted">Not Enrolled</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if student.cv_filename %}
+                        <a href="{{ url_for('download_file', name=student.cv_filename) }}" target="_blank" class="btn btn-small btn-secondary">View File</a>
+                    {% else %}
+                        <span class="text-muted">Not uploaded</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <span class="status-badge {% if student.is_shortlisted %}success{% else %}pending{% endif %}" id="status-badge-{{ student.id }}">
+                        {% if student.is_shortlisted %}Shortlisted{% else %}Pending{% endif %}
+                    </span>
+                </td>
+                <td>
+                    <button class="btn btn-small btn-outline toggle-btn" data-id="{{ student.id }}">
+                        Toggle Status
+                    </button>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" class="text-center">No students found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

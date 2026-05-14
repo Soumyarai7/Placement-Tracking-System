@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="login-wrapper">
+    <div class="login-card glass slide-up" style="max-width: 500px;">
+        <h2>Sign Up</h2>
+        <p>Create a new account</p>
+        <form method="POST" action="{{ url_for('register') }}">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required autocomplete="off" placeholder="Choose a username">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required placeholder="Choose a password">
+            </div>
+            
+            <div class="form-group">
+                <label for="role">Register As</label>
+                <select id="role" name="role" required class="file-input" style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); color: white; font-size: 1rem;" onchange="toggleStudentFields()">
+                    <option value="student" style="color: black;">Student</option>
+                    <option value="admin" style="color: black;">Admin</option>
+                </select>
+            </div>
+
+            <div id="student_fields">
+                <div class="form-group">
+                    <label for="full_name">Full Name</label>
+                    <input type="text" id="full_name" name="full_name" placeholder="Enter your full name">
+                </div>
+                <div class="form-group">
+                    <label for="department">Department</label>
+                    <input type="text" id="department" name="department" placeholder="Enter your department">
+                </div>
+                <div class="form-group">
+                    <label for="cgpa">CGPA</label>
+                    <input type="number" step="0.01" min="0" max="10" id="cgpa" name="cgpa" placeholder="Enter your CGPA (e.g., 8.5)" style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); color: white; font-size: 1rem;">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+        </form>
+        <div class="login-hints" style="margin-top: 1rem;">
+            <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleStudentFields() {
+        const role = document.getElementById('role').value;
+        const studentFields = document.getElementById('student_fields');
+        const inputs = studentFields.querySelectorAll('input');
+        
+        if (role === 'admin') {
+            studentFields.style.display = 'none';
+            inputs.forEach(input => input.removeAttribute('required'));
+        } else {
+            studentFields.style.display = 'block';
+            inputs.forEach(input => input.setAttribute('required', 'required'));
+        }
+    }
+    // Initialize required state
+    toggleStudentFields();
+</script>
+{% endblock %}

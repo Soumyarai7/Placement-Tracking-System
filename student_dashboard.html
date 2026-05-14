@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-header slide-up">
+    <h2>Student Dashboard</h2>
+    <p>Manage your profile and track placement status</p>
+</div>
+
+<div class="dashboard-grid">
+    <div class="card glass slide-up" style="animation-delay: 0.1s;">
+        <h3>Profile Information</h3>
+        <div class="profile-details">
+            <p><strong>Name:</strong> {{ profile.full_name }}</p>
+            <p><strong>Department:</strong> {{ profile.department }}</p>
+            <p><strong>CGPA:</strong> {{ profile.cgpa }}</p>
+            <p><strong>Company Enrolled:</strong> 
+                {% if profile.company %}
+                    {{ profile.company.name }}
+                {% else %}
+                    <span class="text-muted">None</span>
+                {% endif %}
+            </p>
+            <div class="status-badge {% if profile.is_shortlisted %}success{% else %}pending{% endif %}">
+                Status: {% if profile.is_shortlisted %}Shortlisted{% else %}Pending{% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="card glass slide-up" style="animation-delay: 0.2s;">
+        <h3>Company Enrollment</h3>
+        {% if not profile.company %}
+            <form method="POST" action="{{ url_for('enroll_company') }}">
+                <div class="form-group">
+                    <label for="company_id">Select Company to Apply</label>
+                    <select id="company_id" name="company_id" required style="width: 100%; padding: 0.75rem 1rem; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); color: white; font-size: 1rem;">
+                        <option value="" disabled selected style="color: black;">Choose a company...</option>
+                        {% for company in companies %}
+                            <option value="{{ company.id }}" style="color: black;">{{ company.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-secondary">Enroll</button>
+            </form>
+        {% else %}
+            <p class="success-text" style="color: #10B981;">You have successfully enrolled in <strong>{{ profile.company.name }}</strong>.</p>
+        {% endif %}
+    </div>
+
+    <div class="card glass slide-up" style="animation-delay: 0.3s;">
+        <h3>File Management (CV, Images, ZIP)</h3>
+        {% if profile.cv_filename %}
+            <div class="cv-status">
+                <p>Current File: <strong>{{ profile.cv_filename.split('_', 1)[1] }}</strong></p>
+                <a href="{{ url_for('download_file', name=profile.cv_filename) }}" target="_blank" class="btn btn-secondary">View Uploaded File</a>
+            </div>
+            <hr>
+            <h4>Update File</h4>
+        {% else %}
+            <p class="warning-text">You have not uploaded any file yet. Please upload it below.</p>
+        {% endif %}
+        
+        <form method="POST" action="{{ url_for('upload_cv') }}" enctype="multipart/form-data" class="upload-form">
+            <div class="form-group">
+                <label for="cv">Select File (PDF, DOC, ZIP, JPG, PNG)</label>
+                <input type="file" id="cv" name="cv" accept=".pdf,.doc,.docx,.zip,.jpg,.jpeg,.png" required class="file-input">
+            </div>
+            <button type="submit" class="btn btn-primary">Upload File</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
